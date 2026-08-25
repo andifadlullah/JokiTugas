@@ -87,7 +87,6 @@ var state = {
     quantity: null,
     quantityLabel: "",
     customQuantity: "",
-    deadline: "",
     language: null,
     difficulty: null,
     difficultyName: "",
@@ -221,7 +220,6 @@ function selectService(key) {
     state.quantity = null;
     state.quantityLabel = "";
     state.customQuantity = "";
-    state.deadline = "";
     state.language = null;
     state.difficulty = null;
     state.difficultyName = "";
@@ -475,32 +473,6 @@ function attachListeners(key) {
             state.language = this.value || null;
         });
     }
-    // DEADLINE SELECT
-    var dlSelect = document.getElementById("deadlineSelect");
-    if (dlSelect) {
-        dlSelect.addEventListener("change", function () {
-            var val = this.value;
-            var wrap = document.getElementById("customDlWrap");
-
-            if (val === "custom") {
-                wrap.classList.remove("hidden");
-                state.deadline = "";
-            } else if (val !== "") {
-                wrap.classList.add("hidden");
-                state.deadline = val;
-            } else {
-                wrap.classList.add("hidden");
-                state.deadline = "";
-            }
-        });
-    }
-    // CUSTOM DEADLINE
-    var customDl = document.getElementById("customDl");
-    if (customDl) {
-        customDl.addEventListener("input", function () {
-            state.deadline = this.value;
-        });
-    }
     // CUSTOMER FORM
     var custName = document.getElementById("custName");
     if (custName) custName.addEventListener("input", function () { state.name = this.value; });
@@ -553,7 +525,6 @@ function goHome() {
     state.quantity = null;
     state.quantityLabel = "";
     state.customQuantity = "";
-    state.deadline = "";
     state.language = null;
     state.difficulty = null;
     state.difficultyName = "";
@@ -583,7 +554,6 @@ function resetOrder() {
         quantity: null,
         quantityLabel: "",
         customQuantity: "",
-        deadline: "",
         language: null,
         difficulty: null,
         difficultyName: "",
@@ -628,7 +598,6 @@ function generateMessage() {
         lines.push("Model: " + state.modelName);
         lines.push("Jumlah: " + (state.quantityLabel || "-"));
     }
-    lines.push("Deadline: " + (state.deadline || "-"));
     lines.push("");
     lines.push("ESTIMASI HARGA");
     lines.push(formatPrice(state.price || 0));
@@ -690,10 +659,6 @@ function sendWhatsApp() {
             alert("Silakan pilih tingkat kesulitan.");
             return;
         }
-    }
-    if (!state.deadline) {
-        alert("Silakan pilih deadline.");
-        return;
     }
     if (!state.name.trim()) {
         alert("Silakan isi nama kamu.");
