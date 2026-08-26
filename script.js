@@ -45,34 +45,21 @@ const SERVICES = {
         name: "CODING",
         label: "Coding",
         models: [
-            { key: "perbaikan", name: "Perbaikan Error", price: 25000 },
-            { key: "sederhana", name: "Coding Sederhana", price: 35000 },
-            { key: "project", name: "Project", price: 75000 },
-            { key: "website", name: "Website", price: 100000 }
+            { key: "perbaikan", name: "Perbaikan Error", price: 45000 },
+            { key: "sederhana", name: "Pembuatan CRUD", price: 100000 },
+            { key: "website", name: "Hosting", price: 75000 }
         ],
-        languages: ["HTML", "CSS", "JavaScript", "Python", "Java", "C", "C++", "PHP", "SQL"],
-        difficulties: [
-            { key: "mudah", name: "Mudah", multiplier: 1 },
-            { key: "sedang", name: "Sedang", multiplier: 1.5 },
-            { key: "sulit", name: "Sulit", multiplier: 2.5 }
-        ]
+        languages: ["Laravel"]
     },
     database: {
         name: "DATABASE",
         label: "Database",
         models: [
-            { key: "membuat", name: "Membuat Database", price: 35000 },
-            { key: "tabel", name: "Membuat Tabel & Relasi", price: 45000 },
-            { key: "erd", name: "ERD + Database", price: 60000 },
-            { key: "crud", name: "Database + CRUD", price: 85000 },
-            { key: "project", name: "Database untuk Project", price: 100000 }
+            { key: "tabel", name: "Membuat Query Dasar", price: 45000 },
+            { key: "erd", name: "ERD + Database", price: 65000 },
+            { key: "project", name: "Database untuk Project", price: 75000 }
         ],
-        dbTypes: ["MySQL", "PostgreSQL", "SQLite", "SQL Server", "MongoDB", "Lainnya"],
-        difficulties: [
-            { key: "mudah", name: "Mudah", add: 0 },
-            { key: "sedang", name: "Sedang", add: 15000 },
-            { key: "sulit", name: "Sulit", add: 30000 }
-        ]
+        dbTypes: ["MySQL Workbench", "Dbeaver-ce", "SQLite"]
     }
 };
 
@@ -88,16 +75,12 @@ var state = {
     quantityLabel: "",
     customQuantity: "",
     language: null,
-    difficulty: null,
-    difficultyName: "",
     linkProject: "",
     codingNotes: "",
     dbType: null,
     dbProjectName: "",
     dbTables: "",
-    dbDesc: "",
     dbNotes: "",
-    dbRef: "",
     price: null,
     name: "",
     whatsapp: "",
@@ -124,20 +107,6 @@ function getDataMultiplier(cat) {
     var map = { small: 1, medium: 1.5, large: 2.5, xlarge: 4 };
     return map[cat] || 1;
 }
-function getDifficultyMultiplier(diff) {
-    var svc = SERVICES.coding;
-    for (var i = 0; i < svc.difficulties.length; i++) {
-        if (svc.difficulties[i].key === diff) return svc.difficulties[i].multiplier;
-    }
-    return 1;
-}
-function getDbDifficultyAdd(diff) {
-    var svc = SERVICES.database;
-    for (var i = 0; i < svc.difficulties.length; i++) {
-        if (svc.difficulties[i].key === diff) return svc.difficulties[i].add;
-    }
-    return 0;
-}
 
 // ==========================================
 // HITUNG HARGA
@@ -147,14 +116,9 @@ function calculatePrice() {
     var multiplier = 1;
     var addOn = 0;
     if (state.service === "coding") {
-        if (state.difficulty) {
-            multiplier = getDifficultyMultiplier(state.difficulty);
-        }
+        multiplier = 1;
     } else if (state.service === "database") {
-        if (state.difficulty) {
-            addOn = getDbDifficultyAdd(state.difficulty);
-        }
-        return state.modelPrice + addOn;
+        return state.modelPrice;
     } else if (state.service === "excel") {
         if (state.quantity) {
             multiplier = getDataMultiplier(state.quantity);
@@ -221,16 +185,12 @@ function selectService(key) {
     state.quantityLabel = "";
     state.customQuantity = "";
     state.language = null;
-    state.difficulty = null;
-    state.difficultyName = "";
     state.linkProject = "";
     state.codingNotes = "";
     state.dbType = null;
     state.dbProjectName = "";
     state.dbTables = "";
-    state.dbDesc = "";
     state.dbNotes = "";
-    state.dbRef = "";
     state.price = null;
 
     document.getElementById("home-section").classList.add("hidden");
@@ -279,9 +239,9 @@ function renderDetail(key) {
     // CODING: LANGUAGE
     if (key === "coding") {
         html += '<div class="form-group">';
-        html += '<label class="form-label">Bahasa Pemrograman</label>';
+        html += '<label class="form-label">Stack</label>';
         html += '<select class="form-select" id="languageSelect">';
-        html += '<option value="">Pilih bahasa...</option>';
+        html += '<option value="">Pilih Stack...</option>';
         for (var l = 0; l < svc.languages.length; l++) {
             html += '<option value="' + svc.languages[l] + '">' + svc.languages[l] + '</option>';
         }
@@ -298,20 +258,10 @@ function renderDetail(key) {
                 '</div>';
         }
         html += '</div>';
-        // CODING: DIFFICULTY
-        html += '<div class="section-label">Tingkat Kesulitan</div>';
-        html += '<div class="model-grid" id="diffGrid">';
-        for (var d = 0; d < svc.difficulties.length; d++) {
-            var df = svc.difficulties[d];
-            html += '<div class="model-card" data-diff="' + df.key + '">' +
-                '<span class="model-name">' + df.name + '</span>' +
-                '</div>';
-        }
-        html += '</div>';
         // CODING: EXTRA FIELDS
         html += '<div class="form-group">';
         html += '<label class="form-label">Link Project / Repository</label>';
-        html += '<input type="url" class="form-input" id="linkProject" placeholder="https://...">';
+        html += '<input type="url" class="form-input" id="linkProject" placeholder="Opsional">';
         html += '</div>';
         html += '<div class="form-group">';
         html += '<label class="form-label">Jelaskan Kebutuhan Coding</label>';
@@ -340,16 +290,6 @@ function renderDetail(key) {
                 '</div>';
         }
         html += '</div>';
-        html += '<div class="section-label">Tingkat Kesulitan</div>';
-        html += '<div class="model-grid" id="diffGrid">';
-        for (var dd = 0; dd < svc.difficulties.length; dd++) {
-            var ddf = svc.difficulties[dd];
-            var addLabel = ddf.add > 0 ? " (+" + formatPrice(ddf.add) + ")" : "";
-            html += '<div class="model-card" data-diff="' + ddf.key + '">' +
-                '<span class="model-name">' + ddf.name + addLabel + '</span>' +
-                '</div>';
-        }
-        html += '</div>';
         html += '<div class="form-group">';
         html += '<label class="form-label">Nama Project</label>';
         html += '<input type="text" class="form-input" id="dbProjectName" placeholder="Contoh: Sistem Informasi Perpustakaan">';
@@ -359,16 +299,8 @@ function renderDetail(key) {
         html += '<input type="number" class="form-input" id="dbTables" placeholder="Contoh: 8" min="1">';
         html += '</div>';
         html += '<div class="form-group">';
-        html += '<label class="form-label">Deskripsi Database</label>';
-        html += '<textarea class="form-textarea" id="dbDesc" placeholder="Jelaskan kebutuhan database kamu..."></textarea>';
-        html += '</div>';
-        html += '<div class="form-group">';
         html += '<label class="form-label">Kebutuhan / Catatan</label>';
         html += '<textarea class="form-textarea" id="dbNotes" placeholder="Tambahan kebutuhan atau catatan..."></textarea>';
-        html += '</div>';
-        html += '<div class="form-group">';
-        html += '<label class="form-label">Link Referensi / File</label>';
-        html += '<input type="url" class="form-input" id="dbRef" placeholder="https://...">';
         html += '</div>';
     }
     // PRICE BOX
@@ -403,28 +335,21 @@ function renderDetail(key) {
 // ==========================================
 function attachListeners(key) {
     document.getElementById("backBtn").addEventListener("click", goHome);
-    var grids = ["modelGrid", "helpGrid", "diffGrid"];
+    var grids = ["modelGrid", "helpGrid"];
     for (var g = 0; g < grids.length; g++) {
         var grid = document.getElementById(grids[g]);
         if (grid) {
             grid.addEventListener("click", function (e) {
                 var card = e.target.closest(".model-card");
                 if (!card) return;
-                var isDiff = card.hasAttribute("data-diff");
                 var siblings = card.parentElement.querySelectorAll(".model-card");
                 for (var s = 0; s < siblings.length; s++) {
                     siblings[s].classList.remove("selected");
                 }
                 card.classList.add("selected");
-                if (isDiff) {
-                    state.difficulty = card.getAttribute("data-diff");
-                    var rawName = card.querySelector(".model-name").textContent;
-                    state.difficultyName = rawName.indexOf("(") > -1 ? rawName.substring(0, rawName.indexOf("(")).trim() : rawName;
-                } else {
-                    state.model = card.getAttribute("data-model");
-                    state.modelName = card.querySelector(".model-name").textContent;
-                    state.modelPrice = parseInt(card.getAttribute("data-price"));
-                }
+                state.model = card.getAttribute("data-model");
+                state.modelName = card.querySelector(".model-name").textContent;
+                state.modelPrice = parseInt(card.getAttribute("data-price"));
                 updatePrice();
             });
         }
@@ -503,14 +428,8 @@ function attachListeners(key) {
     var dbTables = document.getElementById("dbTables");
     if (dbTables) dbTables.addEventListener("input", function () { state.dbTables = this.value; });
 
-    var dbDesc = document.getElementById("dbDesc");
-    if (dbDesc) dbDesc.addEventListener("input", function () { state.dbDesc = this.value; });
-
     var dbNotes = document.getElementById("dbNotes");
     if (dbNotes) dbNotes.addEventListener("input", function () { state.dbNotes = this.value; });
-
-    var dbRef = document.getElementById("dbRef");
-    if (dbRef) dbRef.addEventListener("input", function () { state.dbRef = this.value; });
     // WHATSAPP BUTTON
     document.getElementById("waBtn").addEventListener("click", sendWhatsApp);
 }
@@ -526,16 +445,12 @@ function goHome() {
     state.quantityLabel = "";
     state.customQuantity = "";
     state.language = null;
-    state.difficulty = null;
-    state.difficultyName = "";
     state.linkProject = "";
     state.codingNotes = "";
     state.dbType = null;
     state.dbProjectName = "";
     state.dbTables = "";
-    state.dbDesc = "";
     state.dbNotes = "";
-    state.dbRef = "";
     state.price = null;
 
     document.getElementById("home-section").classList.remove("hidden");
@@ -555,16 +470,12 @@ function resetOrder() {
         quantityLabel: "",
         customQuantity: "",
         language: null,
-        difficulty: null,
-        difficultyName: "",
         linkProject: "",
         codingNotes: "",
         dbType: null,
         dbProjectName: "",
         dbTables: "",
-        dbDesc: "",
         dbNotes: "",
-        dbRef: "",
         price: null,
         name: "",
         whatsapp: "",
@@ -589,11 +500,9 @@ function generateMessage() {
     if (state.service === "database") {
         lines.push("Jenis Database: " + (state.dbType || "-"));
         lines.push("Jenis Pengerjaan: " + state.modelName);
-        lines.push("Tingkat Kesulitan: " + (state.difficultyName || "-"));
     } else if (state.service === "coding") {
         lines.push("Bahasa Pemrograman: " + (state.language || "-"));
         lines.push("Jenis Bantuan: " + state.modelName);
-        lines.push("Tingkat Kesulitan: " + (state.difficultyName || "-"));
     } else {
         lines.push("Model: " + state.modelName);
         lines.push("Jumlah: " + (state.quantityLabel || "-"));
@@ -611,9 +520,7 @@ function generateMessage() {
         lines.push("DATA PROJECT");
         lines.push("Nama Project: " + (state.dbProjectName || "-"));
         lines.push("Jumlah Tabel: " + (state.dbTables || "-"));
-        lines.push("Deskripsi: " + (state.dbDesc || "-"));
         lines.push("Catatan: " + (state.dbNotes || "-"));
-        lines.push("Link Referensi: " + (state.dbRef || "-"));
     } else if (state.service === "coding") {
         lines.push("Link Project: " + (state.linkProject || "-"));
         lines.push("Deskripsi: " + (state.codingNotes || "-"));
@@ -645,18 +552,10 @@ function sendWhatsApp() {
             alert("Silakan pilih bahasa pemrograman.");
             return;
         }
-        if (!state.difficulty) {
-            alert("Silakan pilih tingkat kesulitan.");
-            return;
-        }
     }
     if (state.service === "database") {
         if (!state.dbType) {
             alert("Silakan pilih jenis database.");
-            return;
-        }
-        if (!state.difficulty) {
-            alert("Silakan pilih tingkat kesulitan.");
             return;
         }
     }
@@ -672,9 +571,6 @@ function sendWhatsApp() {
     var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
     window.open(url, "_blank");
 }
-// ==========================================
-// INISIALISASI
-// ==========================================
 document.getElementById("resetBtn").addEventListener("click", function () {
     var message = "Halo Bang Andi, saya ingin bertanya mengenai jasa yang tersedia.";
     var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
